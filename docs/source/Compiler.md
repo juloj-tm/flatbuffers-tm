@@ -90,10 +90,10 @@ Additional options:
 
 -   `--scoped-enums` : Use C++11 style scoped and strongly typed enums in
     generated C++. This also implies `--no-prefix`.
-    
+
 -   `--no-emit-min-max-enum-values` : Disable generation of MIN and MAX
     enumerated values for scoped enums and prefixed enums.
-    
+
 -   `--gen-includes` : (deprecated), this is the default behavior.
                        If the original behavior is required (no include
 	                   statements) use `--no-includes.`
@@ -226,6 +226,9 @@ Additional options:
 -   `--json-nested-bytes` : Allow a nested_flatbuffer field to be parsed as a
     vector of bytes in JSON, which is unsafe unless checked by a verifier
     afterwards.
+
+-   `--dart-enums` : Prefer `enum` keyword for declaration (except for bit_flags).
+
 
 NOTE: short-form options for generators are deprecated, use the long form
 whenever possible.

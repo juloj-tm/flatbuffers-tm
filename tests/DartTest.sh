@@ -35,3 +35,25 @@ cd ../dart
 dart pub get
 # Execute the sample.
 dart test
+
+# and again with enum keyword
+
+cd ../tests
+
+../flatc --dart --dart-enums --gen-object-api -I include_test -o ../dart/test monster_test.fbs
+../flatc --dart --dart-enums --gen-object-api -I include_test/sub -o ../dart/test include_test/include_test1.fbs
+../flatc --dart --dart-enums --gen-object-api -I include_test -o ../dart/test include_test/sub/include_test2.fbs
+
+cp monsterdata_test.mon ../dart/test
+cp monster_test.fbs ../dart/test
+
+cd ../dart
+
+../flatc --dart --dart-enums --gen-object-api -o ./test ./test/list_of_enums.fbs
+../flatc --dart --dart-enums --gen-object-api -o ./test ./test/bool_structs.fbs
+
+# update packages
+dart pub get
+# Execute the sample.
+dart test
+
