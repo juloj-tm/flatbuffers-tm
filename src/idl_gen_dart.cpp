@@ -139,7 +139,10 @@ class DartGenerator : public BaseGenerator {
 
       if (!kv->first.empty()) { code += "library " + kv->first + ";\n\n"; }
 
-      code += "import 'dart:typed_data' show Uint8List;\n";
+      if (parser_.opts.dart_views)
+        code += "import 'dart:typed_data' show Endian, Int8List, Uint8List;\n";
+      else
+        code += "import 'dart:typed_data' show Uint8List;\n";
       code += "import 'package:flat_buffers/flat_buffers.dart' as " + _kFb +
               ";\n\n";
 
@@ -152,6 +155,42 @@ class DartGenerator : public BaseGenerator {
       }
 
       code += "\n";
+
+      if (parser_.opts.dart_views)
+      {
+        code += "class _Uint8ListViewReader extends fb.Reader<List<int>> {\n"
+                "  const _Uint8ListViewReader();\n"
+                "\n"
+                "  @override\n"
+                "  @pragma('vm:prefer-inline')\n"
+                "  int get size => 4; //_sizeofUint32;\n"
+                "\n"
+                "  @override\n"
+                "  @pragma('vm:prefer-inline')\n"
+                "  List<int> read(fb.BufferContext bc, int offset) {\n"
+                "    final listOffset = bc.derefObject(offset);\n"
+                "    final length = bc.buffer.getUint32(listOffset, Endian.little);\n"
+                "    return Uint8List.view(bc.buffer.buffer, listOffset + 4, length);\n"
+                "  }\n"
+                "}\n\n";
+
+        code += "class _Int8ListViewReader extends fb.Reader<List<int>> {\n"
+                "  const _Int8ListViewReader();\n"
+                "\n"
+                "  @override\n"
+                "  @pragma('vm:prefer-inline')\n"
+                "  int get size => 4; //_sizeofUint32;\n"
+                "\n"
+                "  @override\n"
+                "  @pragma('vm:prefer-inline')\n"
+                "  List<int> read(fb.BufferContext bc, int offset) {\n"
+                "    final listOffset = bc.derefObject(offset);\n"
+                "    final length = bc.buffer.getUint32(listOffset, Endian.little);\n"
+                "    return Int8List.view(bc.buffer.buffer, listOffset + 4, length);\n"
+                "  }\n"
+                "}\n\n";
+      }
+
       code += import_code;
 
       code += kv->second;
@@ -382,10 +421,16 @@ class DartGenerator : public BaseGenerator {
     } else if (IsVector(type)) {
       if (!type.VectorType().enum_def) {
         if (type.VectorType().base_type == BASE_TYPE_CHAR) {
-          return prefix + ".Int8ListReader(" + (lazy ? ")" : "lazy: false)");
+          if (parser_.opts.dart_views)
+            return "const _Int8ListViewReader()";
+          else
+            return prefix + ".Int8ListReader(" + (lazy ? ")" : "lazy: false)");
         }
         if (type.VectorType().base_type == BASE_TYPE_UCHAR) {
-          return prefix + ".Uint8ListReader(" + (lazy ? ")" : "lazy: false)");
+          if (parser_.opts.dart_views)
+            return "const _Uint8ListViewReader()";
+          else
+            return prefix + ".Uint8ListReader(" + (lazy ? ")" : "lazy: false)");
         }
       }
       return prefix + ".ListReader<" +

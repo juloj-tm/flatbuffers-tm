@@ -709,6 +709,7 @@ struct IDLOptions {
   bool ts_omit_entrypoint;
   ProtoIdGapAction proto_id_gap_action;
   bool dart_enums;
+  bool dart_views;
 
   // Possible options for the more general generator below.
   enum Language {
@@ -829,7 +830,8 @@ struct IDLOptions {
         lang_to_generate(0),
         set_empty_strings_to_null(true),
         set_empty_vectors_to_null(true),
-        dart_enums(false)
+        dart_enums(false),
+        dart_views(false)
       {}
 };
 

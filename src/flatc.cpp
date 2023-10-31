@@ -259,6 +259,8 @@ const static FlatCOption flatc_options[] = {
     "Print out generated file names without writing to the files" },
   { "", "dart-enums", "",
     "Prefer \"enum\" keyword for declaration (except for bit_flags)." },
+  { "", "dart-views", "",
+    "Prefer Uint8List or Int8List for byte and char vectors." },
 };
 
 auto cmp = [](FlatCOption a, FlatCOption b) { return a.long_opt < b.long_opt; };
@@ -675,6 +677,8 @@ FlatCOptions FlatCompiler::ParseFromCommandLineArguments(int argc,
         options.file_names_only = true;
       } else if (arg == "--dart-enums") {
         opts.dart_enums = true;
+      } else if (arg == "--dart-views") {
+        opts.dart_views = true;
       } else {
         if (arg == "--proto") { opts.proto_mode = true; }
 
